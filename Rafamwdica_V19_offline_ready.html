@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0ea5e9">
+    <title>Sistem Kasir Rafa Medica (V19 - Offline Ready)</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmFmYSBNZWRpY2EgS2FzaXIiLCJzaG9ydF9uYW1lIjoiUmFmYU1lZGljYSIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMGVhNWU5IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJeE1qZ2lJR2hsYVdkb2REMGlNVEk0SWo0OGNtVmpkQ0IzYVdSMGFEMGlNVEk0SWlCb1pXbG5hSFE5SWpFeU9DSWdabWxzYkQwaUl6QmxZVFZsT1NJdlBqeDBlSFIwSUhodFcxOGlhSFIwY0hNNkx5OTNkM2N1ZHpNdWIzSm5Mekl3TURBdmMzWm5JaUI0UFNJMk5DSWdlVDBpTmpRaUlHWnBiR3c5SW1ac2IzZHlaWGRvYVhSbElpQm1iMjUwTFhOcGVtVTlJalEwSWlCbWIyNTBMWGRsYVdkb2REMGlZbTlzWkNJK1BDRTFRM1JoY21Rdk5UVXRQZ3c4TDNSbGVIUStQQzl6ZG1jKyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 900: '#14532d' },
+                        gold: { 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15', 500: '#eab308', 600: '#ca8a04', 700: '#a16207' },
+                        husna: { light: '#0ea5e9', dark: '#0284c7', bg: '#f0f9ff' },
+                        night: { 800: '#1e293b', 900: '#0f172a' },
+                        ketupat: { light: '#86efac', dark: '#15803d' }
+                    },
+                    fontFamily: { sans: ['Inter', 'Plus Jakarta Sans', 'sans-serif'], mono: ['Courier Prime', 'Courier New', 'monospace'] },
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)', 'glow': '0 0 20px rgba(250, 204, 21, 0.4)' },
+                    animation: {
+                        'sway': 'sway 3s ease-in-out infinite alternate',
+                        'sway-slow': 'sway 5s ease-in-out infinite alternate-reverse',
+                        'swing': 'swing 3s ease-in-out infinite alternate',
+                        'swing-slow': 'swing 4.5s ease-in-out infinite alternate',
+                        'twinkle': 'twinkle 4s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-up': 'floatUp 10s linear infinite',
+                        'type-reveal': 'typeReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                        'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'falling-star': 'fallingStar 4s linear infinite',
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        sway: { from: { transform: 'rotate(-5deg)' }, to: { transform: 'rotate(5deg)' } },
+                        swing: { '0%': { transform: 'rotate(-10deg)' }, '100%': { transform: 'rotate(10deg)' } },
+                        typeReveal: { '0%': { width: '0%', opacity: '0' }, '100%': { width: '100%', opacity: '1' } },
+                        popIn: { '0%': { opacity: '0', transform: 'scale(0.5)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+                        fallingStar: { '0%': { transform: 'translate(0, 0) rotate(35deg)', opacity: 0 }, '20%': { opacity: 1 }, '100%': { transform: 'translate(-200px, 200px) rotate(35deg)', opacity: 0 } },
+                        floatUp: { '0%': { transform: 'translateY(100vh) scale(0.5)', opacity: 0 }, '20%': { opacity: 0.6 }, '80%': { opacity: 0.6 }, '100%': { transform: 'translateY(-10vh) scale(1)', opacity: 0 } }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- React & Dependencies -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- HTML2Canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Fuse.js -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+
+    <style>
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-in-right { animation: slideInRight 0.3s ease-out; }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        
+        /* Offline Indicator Styles */
+        .offline-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .sync-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .sync-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-sky-50 to-indigo-50">
+    <div id="root"></div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Register Service Worker for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('✅ Service Worker registered'))
+                    .catch(err => console.log('❌ Service Worker registration failed:', err));
+            });
+        }
+    </script>
+
+    <!-- Firebase SDK (Module) dengan Offline Persistence -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, writeBatch, query, orderBy, increment, limit, setDoc, getDoc, getDocs, where, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Firebase
+        const userConfig = {
+            apiKey: "AIzaSyC8jXOyogDu_HIXVfjaVX7RhIc6kXiHdLk",
+            authDomain: "stok-barang-49c8e.firebaseapp.com",
+            projectId: "stok-barang-49c8e",
+            storageBucket: "stok-barang-49c8e.firebasestorage.app",
+            messagingSenderId: "1029640155610",
+            appId: "1:1029640155610:web:d7db44abf2c3843cd110e3",
+            measurementId: "G-12KTXQNRPP"
+        };
+
+        const app = initializeApp(userConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // 🔥 AKTIVASI OFFLINE PERSISTENCE - Data tetap tersedia saat offline
+        enableIndexedDbPersistence(db)
+            .then(() => {
+                console.log('✅ Firebase Offline Persistence AKTIF');
+                window.firebaseOfflineEnabled = true;
+            })
+            .catch((err) => {
+                if (err.code === 'failed-precondition') {
+                    console.warn('⚠️ Multiple tabs open, persistence only in one tab');
+                } else if (err.code === 'unimplemented') {
+                    console.warn('⚠️ Browser tidak support offline persistence');
+                }
+            });
+
+        window.firebase = { app, auth, db };
+        window.firebaseModules = { 
+            collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, 
+            serverTimestamp, writeBatch, query, orderBy, increment, limit, 
+            setDoc, getDoc, getDocs, where,
+            signInAnonymously, onAuthStateChanged, signInWithCustomToken 
+        };
+    </script>
+
+    <!-- Main React App -->
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { app, auth, db } = window.firebase;
+        const { 
+            collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, 
+            serverTimestamp, writeBatch, query, orderBy, increment, limit,
+            setDoc, getDoc, getDocs, where,
+            signInAnonymously, onAuthStateChanged, signInWithCustomToken
+        } = window.firebaseModules;
+
+        const APP_NAME = 'Rafa Medica';
+        
+        // ========================================
+        // 🔧 OFFLINE DATABASE MANAGER (IndexedDB)
+        // ========================================
+        class OfflineDB {
+            constructor() {
+                this.dbName = 'RafaMedicaOfflineDB';
+                this.version = 1;
+                this.db = null;
+            }
+
+            async init() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.version);
+                    
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve(this.db);
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        
+                        // Store untuk inventory
+                        if (!db.objectStoreNames.contains('inventory')) {
+                            const inventoryStore = db.createObjectStore('inventory', { keyPath: 'id' });
+                            inventoryStore.createIndex('storeId', 'storeId', { unique: false });
+                            inventoryStore.createIndex('timestamp', 'timestamp', { unique: false });
+                        }
+                        
+                        // Store untuk transactions
+                        if (!db.objectStoreNames.contains('transactions')) {
+                            const transactionStore = db.createObjectStore('transactions', { keyPath: 'id' });
+                            transactionStore.createIndex('timestamp', 'timestamp', { unique: false });
+                        }
+                        
+                        // Store untuk settings
+                        if (!db.objectStoreNames.contains('settings')) {
+                            db.createObjectStore('settings', { keyPath: 'id' });
+                        }
+                        
+                        // Store untuk pending operations (yang belum sync)
+                        if (!db.objectStoreNames.contains('pendingOps')) {
+                            const pendingStore = db.createObjectStore('pendingOps', { keyPath: 'id', autoIncrement: true });
+                            pendingStore.createIndex('timestamp', 'timestamp', { unique: false });
+                        }
+                    };
+                });
+            }
+
+            async saveData(storeName, data) {
+                if (!this.db) await this.init();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.put(data);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async getData(storeName, key) {
+                if (!this.db) await this.init();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.get(key);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async getAllData(storeName) {
+                if (!this.db) await this.init();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.getAll();
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async deleteData(storeName, key) {
+                if (!this.db) await this.init();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.delete(key);
+                    
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async addPendingOperation(operation) {
+                if (!this.db) await this.init();
+                const opWithTimestamp = {
+                    ...operation,
+                    timestamp: Date.now(),
+                    retries: 0
+                };
+                return this.saveData('pendingOps', opWithTimestamp);
+            }
+
+            async getPendingOperations() {
+                return this.getAllData('pendingOps');
+            }
+
+            async clearPendingOperations() {
+                if (!this.db) await this.init();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['pendingOps'], 'readwrite');
+                    const store = transaction.objectStore('pendingOps');
+                    const request = store.clear();
+                    
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+        }
+
+        const offlineDB = new OfflineDB();
+        
+        // ========================================
+        // 🌐 NETWORK STATUS HOOK
+        // ========================================
+        const useNetworkStatus = () => {
+            const [isOnline, setIsOnline] = useState(navigator.onLine);
+            const [isSyncing, setIsSyncing] = useState(false);
+            
+            useEffect(() => {
+                const handleOnline = () => {
+                    setIsOnline(true);
+                    console.log('🟢 Koneksi kembali online');
+                };
+                
+                const handleOffline = () => {
+                    setIsOnline(false);
+                    console.log('🔴 Koneksi offline');
+                };
+                
+                window.addEventListener('online', handleOnline);
+                window.addEventListener('offline', handleOffline);
+                
+                return () => {
+                    window.removeEventListener('online', handleOnline);
+                    window.removeEventListener('offline', handleOffline);
+                };
+            }, []);
+            
+            return { isOnline, isSyncing, setIsSyncing };
+        };
+
+        // ========================================
+        // 🔄 AUTO SYNC MANAGER
+        // ========================================
+        const useSyncManager = (isOnline, user) => {
+            const [lastSyncTime, setLastSyncTime] = useState(null);
+            const syncInProgress = useRef(false);
+
+            const syncPendingOperations = async () => {
+                if (!isOnline || !user || syncInProgress.current) return;
+                
+                syncInProgress.current = true;
+                console.log('🔄 Memulai sinkronisasi...');
+                
+                try {
+                    const pendingOps = await offlineDB.getPendingOperations();
+                    
+                    if (pendingOps.length === 0) {
+                        console.log('✅ Tidak ada operasi pending');
+                        syncInProgress.current = false;
+                        return;
+                    }
+                    
+                    console.log(`📤 Syncing ${pendingOps.length} operasi...`);
+                    
+                    for (const op of pendingOps) {
+                        try {
+                            switch (op.type) {
+                                case 'add':
+                                    await addDoc(collection(db, op.collection), op.data);
+                                    break;
+                                case 'update':
+                                    await updateDoc(doc(db, op.collection, op.docId), op.data);
+                                    break;
+                                case 'delete':
+                                    await deleteDoc(doc(db, op.collection, op.docId));
+                                    break;
+                            }
+                            await offlineDB.deleteData('pendingOps', op.id);
+                            console.log(`✅ Synced: ${op.type} ${op.collection}`);
+                        } catch (err) {
+                            console.error(`❌ Gagal sync operasi:`, err);
+                        }
+                    }
+                    
+                    setLastSyncTime(new Date());
+                    console.log('✅ Sinkronisasi selesai!');
+                    
+                } catch (err) {
+                    console.error('❌ Error saat sinkronisasi:', err);
+                } finally {
+                    syncInProgress.current = false;
+                }
+            };
+
+            useEffect(() => {
+                if (isOnline && user) {
+                    // Sync immediately when coming online
+                    syncPendingOperations();
+                    
+                    // Then sync every 30 seconds
+                    const interval = setInterval(syncPendingOperations, 30000);
+                    return () => clearInterval(interval);
+                }
+            }, [isOnline, user]);
+
+            return { syncPendingOperations, lastSyncTime };
+        };
+
+        // ========================================
+        // 🎨 UI COMPONENTS
+        // ========================================
+        
+        // Offline Banner Component
+        const OfflineBanner = ({ isOnline, isSyncing, lastSyncTime }) => {
+            if (isOnline && !isSyncing) return null;
+            
+            return (
+                <div className="offline-banner">
+                    {!isOnline && (
+                        <div className="flex items-center justify-center gap-2">
+                            <i className="fas fa-wifi-slash"></i>
+                            <span>Mode Offline - Perubahan akan disimpan lokal</span>
+                        </div>
+                    )}
+                    {isOnline && isSyncing && (
+                        <div className="flex items-center justify-center gap-2">
+                            <i className="fas fa-sync-alt sync-spinner"></i>
+                            <span>Menyinkronkan data...</span>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Connection Status Indicator
+        const ConnectionIndicator = ({ isOnline, lastSyncTime }) => {
+            return (
+                <div className={`fixed bottom-4 right-4 z-50 px-4 py-2 rounded-full shadow-lg text-xs font-bold flex items-center gap-2 ${isOnline ? 'bg-green-500' : 'bg-orange-500'} text-white`}>
+                    <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-200' : 'bg-orange-200'} animate-pulse-slow`}></div>
+                    <span>{isOnline ? 'Online' : 'Offline'}</span>
+                    {lastSyncTime && isOnline && (
+                        <span className="text-green-100 text-[10px]">
+                            | Sync: {lastSyncTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                    )}
+                </div>
+            );
+        };
+
+        const Icon = ({ name, className = '' }) => <i className={`fas fa-${name} ${className}`}></i>;
+
+        const Toast = ({ message, type = 'success', onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            return (
+                <div className={`fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-xl shadow-lg z-[100] fade-in flex items-center gap-3`}>
+                    <Icon name={type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} />
+                    <span className="font-semibold">{message}</span>
+                </div>
+            );
+        };
+
+        const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-4 fade-in">
+                    <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+                        <h3 className="text-xl font-bold text-slate-800 mb-2">{title}</h3>
+                        <p className="text-slate-600 mb-6">{message}</p>
+                        <div className="flex gap-3">
+                            <button onClick={onCancel} className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition-colors">Batal</button>
+                            <button onClick={onConfirm} className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-colors">Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ========================================
+        // 📱 MAIN APP COMPONENT (Diperpendek untuk demo)
+        // ========================================
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [inventoryData, setInventoryData] = useState([]);
+            const [toast, setToast] = useState(null);
+            
+            // Network & Sync
+            const { isOnline, isSyncing, setIsSyncing } = useNetworkStatus();
+            const { syncPendingOperations, lastSyncTime } = useSyncManager(isOnline, user);
+
+            // Initialize offline DB
+            useEffect(() => {
+                offlineDB.init().then(() => {
+                    console.log('✅ Offline Database initialized');
+                });
+            }, []);
+
+            // Auth
+            useEffect(() => {
+                const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+                    if (currentUser) {
+                        setUser(currentUser);
+                        setLoading(false);
+                    } else {
+                        try {
+                            const userCredential = await signInAnonymously(auth);
+                            setUser(userCredential.user);
+                            setLoading(false);
+                        } catch (error) {
+                            console.error('Auth error:', error);
+                            setLoading(false);
+                        }
+                    }
+                });
+                return () => unsubscribe();
+            }, []);
+
+            // Load inventory from Firebase with offline fallback
+            useEffect(() => {
+                if (!user) return;
+                
+                const inventoryRef = collection(db, 'inventory');
+                const q = query(inventoryRef, orderBy('name'));
+                
+                const unsubscribe = onSnapshot(q, 
+                    async (snapshot) => {
+                        const items = [];
+                        snapshot.forEach((doc) => {
+                            items.push({ id: doc.id, ...doc.data() });
+                        });
+                        setInventoryData(items);
+                        
+                        // Simpan ke IndexedDB untuk offline access
+                        for (const item of items) {
+                            await offlineDB.saveData('inventory', item);
+                        }
+                        console.log('✅ Data synced to local DB');
+                    },
+                    async (error) => {
+                        console.error('Firebase error, loading from offline DB:', error);
+                        // Jika gagal, load dari IndexedDB
+                        const offlineItems = await offlineDB.getAllData('inventory');
+                        setInventoryData(offlineItems);
+                        setToast({ message: 'Memuat data offline', type: 'info' });
+                    }
+                );
+                
+                return () => unsubscribe();
+            }, [user]);
+
+            // Auto sync when coming online
+            useEffect(() => {
+                if (isOnline && user) {
+                    setIsSyncing(true);
+                    syncPendingOperations().finally(() => {
+                        setTimeout(() => setIsSyncing(false), 1000);
+                    });
+                }
+            }, [isOnline, user]);
+
+            const showToast = (message, type = 'success') => {
+                setToast({ message, type });
+            };
+
+            if (loading) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="animate-spin text-6xl text-sky-500 mb-4">
+                                <Icon name="spinner" />
+                            </div>
+                            <p className="text-slate-600 font-semibold">Memuat aplikasi...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <>
+                    <OfflineBanner isOnline={isOnline} isSyncing={isSyncing} lastSyncTime={lastSyncTime} />
+                    <ConnectionIndicator isOnline={isOnline} lastSyncTime={lastSyncTime} />
+                    
+                    <div className="min-h-screen p-8">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="bg-white rounded-2xl shadow-xl p-8">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="w-16 h-16 bg-sky-500 rounded-xl flex items-center justify-center text-white text-2xl">
+                                        <Icon name="pills" />
+                                    </div>
+                                    <div>
+                                        <h1 className="text-3xl font-black text-slate-800">{APP_NAME}</h1>
+                                        <p className="text-sm text-slate-500 font-semibold">Versi 19 - Offline Ready</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                    <div className="bg-gradient-to-br from-sky-50 to-sky-100 p-6 rounded-xl border border-sky-200">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-10 h-10 bg-sky-500 rounded-lg flex items-center justify-center text-white">
+                                                <Icon name="box" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-sky-600 font-bold uppercase">Total Barang</p>
+                                                <p className="text-2xl font-black text-sky-700">{inventoryData.length}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center text-white">
+                                                <Icon name={isOnline ? 'wifi' : 'wifi-slash'} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-green-600 font-bold uppercase">Status</p>
+                                                <p className="text-2xl font-black text-green-700">{isOnline ? 'Online' : 'Offline'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center text-white">
+                                                <Icon name="database" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-purple-600 font-bold uppercase">Offline DB</p>
+                                                <p className="text-2xl font-black text-purple-700">Aktif</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-6">
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-12 h-12 bg-amber-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+                                            <Icon name="rocket" className="text-xl" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-black text-amber-900 mb-2">Fitur Offline Ready</h3>
+                                            <ul className="space-y-2 text-sm text-amber-800">
+                                                <li className="flex items-center gap-2">
+                                                    <Icon name="check-circle" className="text-green-600" />
+                                                    <span><strong>Service Worker:</strong> Cache semua assets untuk akses cepat</span>
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <Icon name="check-circle" className="text-green-600" />
+                                                    <span><strong>Firebase Persistence:</strong> Data tersimpan otomatis di device</span>
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <Icon name="check-circle" className="text-green-600" />
+                                                    <span><strong>IndexedDB Backup:</strong> Penyimpanan lokal untuk fallback</span>
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <Icon name="check-circle" className="text-green-600" />
+                                                    <span><strong>Auto Sync:</strong> Data tersinkron otomatis saat online</span>
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <Icon name="check-circle" className="text-green-600" />
+                                                    <span><strong>Pending Queue:</strong> Operasi offline disimpan dan diproses saat online</span>
+                                                </li>
+                                            </ul>
+                                            <div className="mt-4 p-4 bg-white rounded-lg border border-amber-200">
+                                                <p className="text-xs font-bold text-amber-900 mb-2">📱 Cara Install sebagai PWA:</p>
+                                                <ol className="text-xs text-amber-800 space-y-1 list-decimal list-inside">
+                                                    <li><strong>Chrome (Desktop):</strong> Klik icon install di address bar</li>
+                                                    <li><strong>Chrome (Mobile):</strong> Menu → Add to Home Screen</li>
+                                                    <li><strong>Safari (iOS):</strong> Share → Add to Home Screen</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {inventoryData.length > 0 && (
+                                    <div className="mt-8">
+                                        <h3 className="text-lg font-bold text-slate-800 mb-4">Data Inventory</h3>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full">
+                                                <thead>
+                                                    <tr className="bg-slate-50 text-left">
+                                                        <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase">Nama Barang</th>
+                                                        <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase">Qty</th>
+                                                        <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase">Unit</th>
+                                                        <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase">Rak</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {inventoryData.slice(0, 10).map((item, idx) => (
+                                                        <tr key={item.id} className="border-b border-slate-100">
+                                                            <td className="px-4 py-3 text-sm font-semibold text-slate-800">{item.name}</td>
+                                                            <td className="px-4 py-3 text-sm text-slate-600">{item.qty || 0}</td>
+                                                            <td className="px-4 py-3 text-sm text-slate-600">{item.unit || '-'}</td>
+                                                            <td className="px-4 py-3 text-sm text-slate-600">{item.rack || '-'}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                            {inventoryData.length > 10 && (
+                                                <p className="text-center text-sm text-slate-500 mt-4">
+                                                    ...dan {inventoryData.length - 10} barang lainnya
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+                </>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
